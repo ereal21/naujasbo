@@ -594,6 +594,8 @@ async def add_main_category_callback_handler(call: CallbackQuery):
         await bot.edit_message_text('Enter main category name',
                                     chat_id=call.message.chat.id,
                                     message_id=call.message.message_id,
+                                    reply_markup=back('categories_management'))
+
                                     reply_markup=back('shop_management'))
         return
     await call.answer('Nepakanka teisių')
@@ -709,6 +711,8 @@ async def process_main_category_name(message: Message):
         await bot.edit_message_text(chat_id=message.chat.id,
                                     message_id=message_id,
                                     text='❌ Main category already exists',
+                                    reply_markup=back('categories_management'))
+
                                     reply_markup=back('shop_management'))
         return
     TgConfig.STATE[f'{user_id}_main_cat_name'] = name
@@ -729,6 +733,8 @@ async def main_category_referral_handler(call: CallbackQuery):
     await bot.edit_message_text('✅ Main category created',
                                 chat_id=call.message.chat.id,
                                 message_id=call.message.message_id,
+                                reply_markup=back('categories_management'))
+
                                 reply_markup=back('shop_management'))
     admin_info = await bot.get_chat(user_id)
     logger.info(f"User {user_id} ({admin_info.first_name}) created main category \"{name}\"")

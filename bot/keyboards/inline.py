@@ -443,6 +443,7 @@ def item_management() -> InlineKeyboardMarkup:
 
 def categories_management() -> InlineKeyboardMarkup:
     inline_keyboard = [
+        [InlineKeyboardButton('🆕 Sukurti pagrindinę kategoriją', callback_data='add_main_category')],
         [InlineKeyboardButton('📁 Pridėti kategoriją', callback_data='add_category')],
         [InlineKeyboardButton('📂 Pridėti subkategoriją', callback_data='add_subcategory')],
         [InlineKeyboardButton('✏️ Atnaujinti kategoriją', callback_data='update_category')],
