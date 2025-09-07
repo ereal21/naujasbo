@@ -106,15 +106,29 @@ class User(Database.BASE):
         self.streak_discount = streak_discount
 
 
+class MainCategory(Database.BASE):
+    __tablename__ = 'main_categories'
+    name = Column(String(100), primary_key=True, unique=True, nullable=False)
+    referral_reward = Column(Boolean, nullable=False, default=False)
+    categories = relationship("Categories", back_populates="main_category")
+
+    def __init__(self, name: str, referral_reward: bool = False):
+        self.name = name
+        self.referral_reward = referral_reward
+
+
 class Categories(Database.BASE):
     __tablename__ = 'categories'
     name = Column(String(100), primary_key=True, unique=True, nullable=False)
     parent_name = Column(String(100), nullable=True)
+    main_category_name = Column(String(100), ForeignKey('main_categories.name'), nullable=True)
+    main_category = relationship("MainCategory", back_populates="categories")
     item = relationship("Goods", back_populates="category")
 
-    def __init__(self, name: str, parent_name: str | None = None):
+    def __init__(self, name: str, parent_name: str | None = None, main_category_name: str | None = None):
         self.name = name
         self.parent_name = parent_name
+        self.main_category_name = main_category_name
 
 
 class Goods(Database.BASE):

@@ -1,7 +1,7 @@
 import sqlalchemy.exc
 import random
 import datetime
-from bot.database.models import User, ItemValues, Goods, Categories, BoughtGoods, \
+from bot.database.models import User, ItemValues, Goods, Categories, MainCategory, BoughtGoods, \
     Operations, UnfinishedOperations, PromoCode, UserAchievement, StockNotification
 from bot.database import Database
 
@@ -47,10 +47,19 @@ def add_values_to_item(item_name: str, value: str, is_infinity: bool) -> None:
     session.commit()
 
 
-def create_category(category_name: str, parent: str | None = None) -> None:
+def create_main_category(name: str, referral_reward: bool) -> None:
     session = Database().session
+    session.add(MainCategory(name=name, referral_reward=referral_reward))
+    session.commit()
+
+
+def create_category(category_name: str, parent: str | None = None, main_category: str | None = None) -> None:
+    session = Database().session
+    if main_category is None and parent:
+        parent_main = session.query(Categories.main_category_name).filter(Categories.name == parent).first()
+        main_category = parent_main[0] if parent_main else None
     session.add(
-        Categories(name=category_name, parent_name=parent))
+        Categories(name=category_name, parent_name=parent, main_category_name=main_category))
     session.commit()
 
 
