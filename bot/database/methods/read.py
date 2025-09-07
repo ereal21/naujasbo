@@ -3,8 +3,8 @@ import datetime
 import sqlalchemy
 from sqlalchemy import exc, func
 
-from bot.database.models import Database, User, ItemValues, Goods, Categories, Role, BoughtGoods, \
-    Operations, UnfinishedOperations, PromoCode, Achievement, UserAchievement, StockNotification
+from bot.database.models import Database, User, ItemValues, Goods, Categories, MainCategory, Role, \
+    BoughtGoods, Operations, UnfinishedOperations, PromoCode, Achievement, UserAchievement, StockNotification
 
 
 def check_user(telegram_id: int) -> User | None:
@@ -89,6 +89,17 @@ def get_all_category_names() -> list[str]:
     """Return all top-level categories regardless of contents."""
     return [c[0] for c in Database().session.query(Categories.name)
             .filter(Categories.parent_name.is_(None)).all()]
+
+
+def get_all_main_categories() -> list[str]:
+    return [c[0] for c in Database().session.query(MainCategory.name).all()]
+
+
+def get_categories_by_main(main_name: str) -> list[str]:
+    """Return top-level categories belonging to the given main category."""
+    return [c[0] for c in Database().session.query(Categories.name)
+            .filter(Categories.parent_name.is_(None),
+                    Categories.main_category_name == main_name).all()]
 
 
 def get_all_subcategories(parent_name: str) -> list[str]:
@@ -215,6 +226,20 @@ def check_item(item_name: str) -> dict | None:
 def check_category(category_name: str) -> dict | None:
     result = Database().session.query(Categories).filter(Categories.name == category_name).first()
     return result.__dict__ if result else None
+
+
+def check_main_category(name: str) -> dict | None:
+    result = Database().session.query(MainCategory).filter(MainCategory.name == name).first()
+    return result.__dict__ if result else None
+
+
+def is_referral_enabled_for_item(item_name: str) -> bool:
+    session = Database().session
+    result = (session.query(MainCategory.referral_reward)
+              .join(Categories, Categories.main_category_name == MainCategory.name)
+              .join(Goods, Goods.category_name == Categories.name)
+              .filter(Goods.name == item_name).first())
+    return bool(result[0]) if result else False
 
 
 def get_item_value(item_name: str) -> dict | None:
