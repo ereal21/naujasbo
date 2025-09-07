@@ -327,6 +327,7 @@ def user_manage_check(user_id: int) -> InlineKeyboardMarkup:
 def shop_management(role: int) -> InlineKeyboardMarkup:
     inline_keyboard = [
         [InlineKeyboardButton('📦 Prekių įpakavimas', callback_data='goods_management')],
+        [InlineKeyboardButton('🆕 Pridėti pagrindinę kategoriją', callback_data='add_main_category')],
         [InlineKeyboardButton('🗂️ Kategorijų kūrimas', callback_data='categories_management')],
         [InlineKeyboardButton('🏷️ Nuolaidų kodai', callback_data='promo_management')],
         [InlineKeyboardButton('📢 Pranešimų siuntimas', callback_data='send_message')],
