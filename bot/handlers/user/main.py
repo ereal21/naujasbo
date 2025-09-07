@@ -28,7 +28,7 @@ from bot.database.methods import (
     has_user_achievement, get_achievement_users, grant_achievement, get_user_count,
     get_out_of_stock_categories, get_out_of_stock_subcategories, get_out_of_stock_items,
     has_stock_notification, add_stock_notification, check_user_by_username, check_user_referrals,
-    sum_referral_operations,
+    sum_referral_operations, is_referral_enabled_for_item,
 )
 from bot.handlers.other import get_bot_user_ids, get_bot_info
 from bot.keyboards import (
@@ -1086,7 +1086,7 @@ async def buy_item_callback_handler(call: CallbackQuery):
                 add_bought_item(value_data['item_name'], value_data['value'], item_price, user_id, formatted_time)
 
             referral_id = get_user_referral(user_id)
-            if referral_id and TgConfig.REFERRAL_PERCENT:
+            if referral_id and TgConfig.REFERRAL_PERCENT and is_referral_enabled_for_item(item_name):
                 reward = round(item_price * TgConfig.REFERRAL_PERCENT / 100, 2)
                 update_balance(referral_id, reward)
                 ref_lang = get_user_language(referral_id) or 'en'
@@ -1832,7 +1832,7 @@ async def checking_payment(call: CallbackQuery):
                     except Exception:
                         pass
 
-                if referral_id and TgConfig.REFERRAL_PERCENT:
+                if referral_id and TgConfig.REFERRAL_PERCENT and is_referral_enabled_for_item(item_name):
                     reward = round(price * TgConfig.REFERRAL_PERCENT / 100, 2)
                     update_balance(referral_id, reward)
                     ref_lang = get_user_language(referral_id) or 'en'
