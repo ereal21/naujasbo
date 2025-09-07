@@ -95,6 +95,12 @@ def get_all_main_categories() -> list[str]:
     return [c[0] for c in Database().session.query(MainCategory.name).all()]
 
 
+def get_categories_by_main(main_name: str) -> list[str]:
+    """Return top-level categories belonging to the given main category."""
+    return [c[0] for c in Database().session.query(Categories.name)
+            .filter(Categories.parent_name.is_(None),
+                    Categories.main_category_name == main_name).all()]
+
 def get_all_subcategories(parent_name: str) -> list[str]:
     """Return all subcategories of a given category."""
     return [c[0] for c in Database().session.query(Categories.name)
